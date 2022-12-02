@@ -1,0 +1,5 @@
+bak/
+*.dmp
+*.tmp
+*.dbg
+*.dup
