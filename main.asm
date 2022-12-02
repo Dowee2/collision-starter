@@ -18,7 +18,8 @@ PROGRAM_START
         ldy #>CLEAR_CHAR
         jsr PRINTLINE
 ; start your code here
-        
+        jsr LOAD_CAT_SPRITE
+
 
 program_exit
         rts
@@ -66,6 +67,39 @@ count_jiffies_loop
         rts
 
 
+LOAD_CAT_SPRITE
+        jsr LOAD_CAT_SPRITE_DATA
+        jsr SET_CAT_POINTER
+        jsr SET_CAT_LOCATION
+        LDA #1
+        STA $D015
+        
+        rts
+
+LOAD_CAT_SPRITE_DATA
+        LDX #64
+load_sprite_loop                ;loads sprites into memory from CAT_SPRITE_DATA
+        LDA CAT_SPRITE_DATA,X   ;Loads the Memory Loacation from the start of CAT DATA + X into A
+        STA CAT_SPRITE_PIXELS,X             ;Stores A into Memory Location 2E80 + X
+        DEX     ;x= x-1
+        BNE load_sprite_loop 
+
+        rts
+
+SET_CAT_POINTER
+        LDA CAT_SPRITE_PIXELS/64
+        STA $07f8
+        rts
+
+SET_CAT_LOCATION
+        LDA #30
+        STA $D000 ;Set X Coord of Sprite
+        
+        LDA #200
+        STA $D001 ;Set Y Coord of Sprite
+
+        rts
+        
 ; Screen 1 -  Screen datA
 ROW4_DATA
         BYTE    $7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F
