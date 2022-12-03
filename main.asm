@@ -19,6 +19,10 @@ PROGRAM_START
         jsr PRINTLINE
 ; start your code here
         jsr LOAD_CAT_SPRITE
+        jsr LOAD_MUSHROOM_SPRITE
+        jsr LOAD_ROWS
+        jsr MOVE_CAT
+
 
 
 program_exit
@@ -67,39 +71,156 @@ count_jiffies_loop
         rts
 
 
+BACKGROUND_COLLISON
+        LDA #1
+        AND $D01F
+        BEQ  set_color_white
+        BNE  set_color_red
+
+        rts
+
+set_color_red
+        LDA #$1
+        STA $D027
+        jsr MOVE_CAT
+        rts
+
+set_color_white
+        LDA #$2
+        STA $D027
+        jsr MOVE_CAT
+
+        rts
+
+MOVE_CAT
+lower_cat_loop 
+        LDA $D001
+        ADC #10
+        STA $D001
+        jsr WAIT_1_SECOND
+
+        BNE lower_cat_loop
+        BEQ lower_cat_loop
+
+        rts
+
 LOAD_CAT_SPRITE
         jsr LOAD_CAT_SPRITE_DATA
         jsr SET_CAT_POINTER
         jsr SET_CAT_LOCATION
         LDA #1
         STA $D015
-        
+
         rts
+
 
 LOAD_CAT_SPRITE_DATA
         LDX #64
-load_sprite_loop                ;loads sprites into memory from CAT_SPRITE_DATA
-        LDA CAT_SPRITE_DATA,X   ;Loads the Memory Loacation from the start of CAT DATA + X into A
-        STA CAT_SPRITE_PIXELS,X             ;Stores A into Memory Location 2E80 + X
+load_sprite_loop        ;loads sprites into memory from ANT_DATA
+        LDA CAT_SPRITE_DATA,x ;Loads the Memory Loacation from the start of ANT DATA + X into A
+        STA $2E80,x     ;Stores A into Memory Location 2E80 + X
         DEX     ;x= x-1
         BNE load_sprite_loop 
 
         rts
 
 SET_CAT_POINTER
-        LDA CAT_SPRITE_PIXELS/64
-        STA $07f8
+        LDA #$2E80/64
+        STA $07F8
+
         rts
 
 SET_CAT_LOCATION
-        LDA #30
+        LDA #150
         STA $D000 ;Set X Coord of Sprite
         
-        LDA #200
+        LDA #150
         STA $D001 ;Set Y Coord of Sprite
 
         rts
+
+
+LOAD_MUSHROOM_SPRITE 
+
+        jsr LOAD_MUSHROOM_SPRITE_DATA
+        jsr SET_MUSHROOM_POINTER
+        jsr SET_MUSHROOM_LOCATION
+        LDA #3
+        STA $D015
         
+        rts
+
+LOAD_MUSHROOM_SPRITE_DATA
+        LDX #64
+load_sprite_MUSH_loop        ;loads sprites into memory from ANT_DATA
+        LDA MUSHROOM_SPRITE_DATA,x ;Loads the Memory Loacation from the start of ANT DATA + X into A
+        STA $2EC0,x     ;Stores A into Memory Location 2E80 + X
+        DEX     ;x= x-1
+        BNE load_sprite_MUSH_loop 
+
+SET_MUSHROOM_POINTER
+        LDA #$2EC0/64
+        STA $07F9
+
+        rts
+
+SET_MUSHROOM_LOCATION
+        LDA #150
+        STA $D002 ;Set X Coord of Sprite
+        
+        LDA #200
+        STA $D003 ;Set Y Coord of Sprite
+
+        rts
+
+LOAD_ROWS
+        jsr LOAD_ROW_4
+        jsr LOAD_ROW_11
+        jsr LOAD_ROW_17
+        jsr LOAD_ROW_22
+
+        rts
+
+LOAD_ROW_4
+        LDX #$27
+load_row4_loop
+        LDA ROW4_DATA,x 
+        STA $04a0,x - #1
+        DEX
+        BNE load_row4_loop
+
+        rts
+
+LOAD_ROW_11
+        LDX #$27
+load_row11_loop
+        LDA ROW11_DATA,x 
+        STA $06A8,x - #1
+        DEX
+        BNE load_row11_loop
+
+        rts
+
+LOAD_ROW_17
+        LDX #$27
+load_row17_loop
+        LDA ROW17_DATA,x 
+        STA $0798,x - #1
+        DEX
+        BNE load_row17_loop
+
+        rts
+
+LOAD_ROW_22
+        LDX #$27
+load_row22_loop
+        LDA ROW22_DATA,x 
+        STA $0950,x -#1 
+        DEX
+        BNE load_row22_loop
+
+        rts
+
 ; Screen 1 -  Screen datA
 ROW4_DATA
         BYTE    $7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F
